@@ -17,7 +17,10 @@ export const requireAuth = async (
 	}
 	jwt.verify(token, "secretKey", function (error, result) {
 		if (error) {
-			return res.status(403).json("jwt expired");
+			if (error.name === "TokenExpiredError") {
+				return res.status(403).json("jwt expired");
+			}
+			res.status(500).send(error);
 		}
 		res.locals.payload = result;
 		console.log("JWT auth passed!");
